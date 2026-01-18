@@ -1,35 +1,122 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
-bool f(int ind, int target , vector<int> arr, vector<vector<int>> dp){
-    if(target == 0) return 0;
-    if(ind == 0) return arr[0] == target;
-    if(dp[ind][target] != -1) return dp[ind][target];
-    bool notTake = f(ind -1 ,target , arr, dp);
-    bool take= false;
-    if(arr[ind] <= target){
-        take = f(ind-1, target-arr[ind], arr, dp)
+struct Fenwick {
+    int size;
+    vector<int> tree;
+
+    Fenwick(int n) : size(n), tree(n + 1, 0) {}
+
+    void add(int index, int val) {
+        for (; index <= size; index += index & -index)
+            tree[index] += val;
     }
-    return dp[ind][target] = take | notTake;
 
+    int query(int index) {
+        int sum = 0;
+        for (; index > 0; index -= index & -index)
+            sum += tree[index];
+        return sum;
+    }
+};
+
+struct Robot {
+    int id;
+    int costL;
+    int costR;
+};
+
+bool compareRobots(const Robot& a, const Robot& b) {
+    return a.costL < b.costL;
 }
-int main() {
-    vector<int> arr;
-    vector<vector<int>> dp(n, vector<int>(k+1, -1));
-    return f(n-1, k , arr, dp);
 
-    // Tabulation
-    vector<vector<bool>> dp(n, vector<int>(k+1, 0));
-    for(int i =0 ;i<n;i++) dp[i][0] = true;
-    dp[0][arr[0]] = true;
-    for(int ind = 1; ind<n;ind++){
-        for(int target = 1; target <=k;target++){
-            bool notTake= dp[ind-1][target];
-            bool take = false;
-            if(arr[ind] <= target) dp[ind-1][target-arr[ind]];
-            dp[ind][target] = take | notTake;
+void solve() {
+    int n, m, k;
+    cin >> n >> m >> k;
+
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+
+    vector<int> b(m);
+    for (int i = 0; i < m; ++i) cin >> b[i];
+
+    string gdCode;
+    cin >> gdCode;
+
+    sort(a.begin(), a.end());
+    sort(b.begin(), b.end());
+
+    vector<Robot> robots(n);
+    vector<int> all_costR;
+    all_costR.reserve(n);
+
+    for (int i = 0; i < n; ++i) {
+        robots[i].id = i;
+        
+        auto it = lower_bound(b.begin(), b.end(), a[i]);
+        
+        if (it != b.end()) {
+            long long dist = (long long)*it - a[i];
+            robots[i].costL = (dist > k) ? k + 1 : (int)dist;
+        } else {
+            robots[i].costL = k + 1;
         }
+
+        if (it != b.begin()) {
+            long long dist = (long long)a[i] - *prev(it);
+            robots[i].costR = (dist > k) ? k + 1 : (int)dist;
+        } else {
+            robots[i].costR = k + 1;
+        }
+
+        all_costR.push_back(robots[i].costR);
     }
-    return dp[n-1][k];
+
+    sort(robots.begin(), robots.end(), compareRobots);
+    sort(all_costR.begin(), all_costR.end());
+
+    Fenwick ft(k + 2);
+    int ptr = 0;
+
+    int cur = 0;
+    int mx = 0;
+    int mn = 0;
+
+    for (char c : gdCode) {
+        if (c == 'L') {
+            cur--;
+        } else {
+            cur++;
+        }
+        mx = max(mx, cur);
+        mn = min(mn, cur);
+
+        int R_thresh = mx;
+        int L_thresh = -mn;
+
+        while (ptr < n && robots[ptr].costL <= R_thresh) {
+            ft.add(robots[ptr].costR, 1);
+            ptr++;
+        }
+
+        int countL = ptr;
+        
+        auto itR = upper_bound(all_costR.begin(), all_costR.end(), L_thresh);
+        int countR = (int)(itR - all_costR.begin());
+
+        int overlap = ft.query(L_thresh);
+
+        int dead = countL + countR - overlap;
+        cout << n - dead << " ";
+    }
+    cout << "\n";
 }
 
+int main() {
+    int t;
+    cin >> t;
+        while (t--) {
+            solve();
+        }
+    
+}
