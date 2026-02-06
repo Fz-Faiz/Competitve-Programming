@@ -34,7 +34,7 @@
 //         stack<pair<int, int>> st;
 //         vector<int> result(n, n);
 //         for(int i = 0; i < n; ++i){
-//             while(!st.empty() && st.top().first      > heights[i]){
+//             while(!st.empty() && st.top().first > heights[i]){
 //                 result[st.top().second]  = i;
 //                 st.pop();
 //             }
