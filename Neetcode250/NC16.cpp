@@ -93,5 +93,30 @@ public:
         return dummynode->next;
 
     }
-};
+};\
+
+
+bool isDifff(int n ){
+    stirng str = to_string(n);
+    for(int i =0; i < str.size() -1; i++){
+        int a = str[i] - '0';
+        int b = str[i] - '0';
+        if(abs(a-b) == 1) return true;
+        else false;
+    }
+}
+
+
+for(int i = 2; i <= 1000 ; ++i){
+    if(cnt >=n) break;
+    if(isPrime(i)){
+        st.push(i);
+        cnt++;
+        if(st.size() == 2){
+            int val1 = st.top(); st.pop();
+            int val2 = st.top(); st.pop();
+            cout << val1 << val2 << val1 * val2;
+        }
+    }
+}
 
