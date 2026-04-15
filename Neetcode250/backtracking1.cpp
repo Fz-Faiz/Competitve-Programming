@@ -137,3 +137,40 @@ public:
         
     }
 };
+
+// 17. Letter Combinations of a Phone Number
+
+class Solution {
+public:
+    map<char, string> mp = {
+        {'2', "abc"},
+        {'3', "def"},
+        {'4', "ghi"},
+        {'5', "jkl"},
+        {'6', "mno"},
+        {'7', "pqrs"},
+        {'8', "tuv"},
+        {'9', "wxyz"}
+    };
+    vector<string> ans;
+    void solve(int idx, string& digits, string& ds){
+        if(idx == digits.size()){
+            ans.push_back(ds);
+            return;
+        }
+
+        string letters = mp[digits[idx]];
+            for(auto& it: letters){
+                ds.push_back(it);
+                solve(idx+1, digits, ds);
+                ds.pop_back();
+            }
+
+
+    }
+    vector<string> letterCombinations(string digits) {
+        string ds;
+        solve(0, digits, ds);
+        return ans;
+    }
+};
