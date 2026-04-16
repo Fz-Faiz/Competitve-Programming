@@ -61,3 +61,57 @@ public:
         return -1;
     }
 };
+
+// bfs
+
+class Solution {
+  public:
+    vector<int> bfs(vector<vector<int>> &adj) {
+        // code here
+        vector<int> ans;
+        queue<int> q;
+        q.push(0);
+        int  n = adj.size();
+        
+        vector<int> visited(n, 0);
+        visited[0] = 1;
+        while(!q.empty()){
+            int ele = q.front();
+            q.pop();
+            ans.push_back(ele);
+            for(auto& it: adj[ele]){
+                if(!visited[it]){
+                    q.push(it);
+                    visited[it] = 1;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+// DFS
+
+class Solution {
+  public:
+    int n;
+    
+    vector<int> result;
+    void dfs(vector<vector<int>>& adj, int node,vector<int>& vis){
+        vis[node] = 1;
+        result.push_back(node);
+        
+        for(auto& it: adj[node]){
+            if(!vis[it]) dfs(adj, it, vis);
+        }
+        
+        
+    }
+    vector<int> dfs(vector<vector<int>>& adj) {
+        // Code here
+        n = adj.size();
+        vector<int> vis(n, 0);
+        dfs(adj, 0, vis);
+        return result;
+    }
+};
